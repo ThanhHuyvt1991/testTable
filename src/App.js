@@ -23,6 +23,20 @@ import { Checkbox, Button } from "@material-ui/core";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Drawer from "@material-ui/core/Drawer";
+import * as style from "./App.css";
+const customTrGroupComponent = props => {
+  var extra_style = null;
+  if (props.viewIndex % 2 == 0) {
+    extra_style = {
+      // backgroundColor: "#ebebeb"
+    };
+  }
+  return (
+    <div className="rt-tr-group" style={extra_style}>
+      {props.children}
+    </div>
+  );
+};
 const styles = theme => ({
   list: {
     width: 250
@@ -69,47 +83,17 @@ function getStyles(name, that) {
         : that.props.theme.typography.fontWeightMedium
   };
 }
-
-// const columns = [
-//   {
-//     header: "Name",
-//     accessor: "name" // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
-//   },
-//   {
-//     header: "Age",
-//     accessor: "age",
-//     Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
-//   },
-//   {
-//     id: "friendName", // Khi accessor không phải là 1 chuỗi thì phải cung cấp id để đại diện cho thuộc tính cột.
-//     header: "Friend Name",
-//     accessor: d => d.friend.name // Tùy biến giá trị đại diện cho giá trị của thuộc tính của phần tử ở cột này.
-//   },
-//   {
-//     header: props => <span>Friend Age</span>, // Tùy biến component Header
-//     accessor: "friend.age" // Khi 1 thuộc tính của dữ liệu có kiểu là 1 đối tượng, chúng ta cũng có thể cung cấp đường dẫn đến thuộc tính cần lấy giá trị.
-//   }
-// ];
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.handsontableData = [
-      ["", "Ford", "Volvo", "Toyota", "Honda"],
-      ["2016", 10, 11, 12, 13],
-      ["2017", 20, 11, 14, 13],
-      ["2018", 30, 15, 12, 13]
-    ];
     this.state = {
+      selected: null,
       checkedShow: true,
-      top: false,
-      left: false,
-      bottom: false,
       right: false,
-      dataDemo: [],
-      dataCol: [],
       name: [],
       columns: [
         {
+          // style: { textAlign: "right" },
           show: true,
           id: "name",
           Header: "Name",
@@ -141,7 +125,50 @@ class App extends React.Component {
     };
   }
   toggleDrawer = (side, open) => () => {
+    console.log("this.state", this.state.columns);
+    var obj1 = [
+      {
+        show: false,
+        id: "name",
+        Header: "Name",
+        accessor: "name" // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
+      },
+      {
+        id: "age",
+        show: false,
+        Header: "Age",
+        accessor: "age",
+        Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
+      },
+      {
+        show: false,
+        id: "friendName", // Khi accessor không phải là 1 chuỗi thì phải cung cấp id để đại diện cho thuộc tính cột.
+        Header: "Friend Name",
+        accessor: "friend.name" // Tùy biến giá trị đại diện cho giá trị của thuộc tính của phần tử ở cột này.
+      },
+      {
+        id: "friendAge",
+        show: false,
+        filterable: false,
+        Header: "Friend Age", // Tùy biến component Header
+        accessor: "friend.age" // Khi 1 thuộc tính của dữ liệu có kiểu là 1 đối tượng, chúng ta cũng có thể cung cấp đường dẫn đến thuộc tính cần lấy giá trị.
+      }
+    ];
+    let mapObject = {};
+    this.state.columns.forEach(item => {
+      mapObject[item.id] = item;
+    });
+    let result = obj1.map(item => {
+      return { ...item, ...mapObject[item.id] };
+    });
+
+    // var mergedObj = [{ ...obj2, ...obj1 }];
+    console.log("mergedObj", result);
+    // const c = [...b, this.state.columns];
+    // console.log("ccccccccccccccc", c);
+
     this.setState({
+      columns: result,
       [side]: open
     });
   };
@@ -229,15 +256,9 @@ class App extends React.Component {
   handleChange = item => event => {
     console.log("event.target.checked", event.target.checked);
     console.log("name", item);
-
-    // for (let item of this.state.columns) {
-    //   if (item.id === name) {
     item.show = event.target.checked;
-    // }
-    // }
     this.setState({
-      columns: [...this.state.columns]
-      // [checked]: event.target.checked
+      // columns: this.state.columns
     });
   };
 
@@ -254,69 +275,126 @@ class App extends React.Component {
     });
   };
 
-  handleClick = e => {
-    console.log("col", this.state.columns);
-    // for (let item of this.state.columns) {
-    //   if (item.accessor === "name") {
-    //     item.show = false;
-    //   }
-    // }
-    const Da = [
-      (this.state.columns[0].show = false),
-      ...this.state.columns
-    ].filter(i => i.show === true);
-    this.setState({
-      columns: Da
+  mountEvents() {
+    var headers = Array.prototype.slice.call(
+      document.querySelectorAll(".rt-resizable-header-content")
+    );
+    headers.forEach((header, i) => {
+      header.setAttribute("draggable", true);
+      header.ondrag = e => e.stopPropagation();
+      header.ondragend = e => e.stopPropagation();
+      header.ondragover = e => e.preventDefault();
+
+      header.ondragstart = e => {
+        e.stopPropagation();
+        this.draggedCol = i;
+        // Firefox needs this to get draggin workin
+        // See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations
+        e.dataTransfer.setData("text", "fix firefox dragevents");
+      };
+
+      header.ondrop = e => {
+        e.preventDefault();
+        // Remove item from array and stick it in a new position.
+        console.log("this.state.columns", this.state.columns);
+
+        const test = this.state.columns.filter(i => i.show === true);
+        test.splice(i, 0, test.splice(this.draggedCol, 1)[0]);
+        const newColLayout = test;
+        console.log("newColLayout", newColLayout);
+
+        // Hack to force ReactTable to actually reload. Can someone tell me how to do this better? Or how i can remove this code completely
+        this.setState({
+          columns: []
+        });
+        // Reload ReactTable and listen to events as they get broken for some reason.
+        this.setState(
+          {
+            columns: test
+          },
+          () => {
+            // Hack to rebind events as they get lost. Anyway to clean this up?
+            this.mountEvents();
+          }
+        );
+      };
     });
-    console.log("col2", this.state.columns);
-  };
+  }
+  componentDidMount() {
+    var obj1 = [
+      { show: true, x: 4223, id: 1 },
+      { show: true, x: 422233, id: 2 },
+      { show: true, x: 2422323, id: 3 }
+    ];
+    var obj2 = [
+      { show: false, x: 13, id: 3 },
+      { show: false, x: 23232, id: 2 }
+    ];
+    let mapObject = {};
+    obj2.forEach(item => {
+      mapObject[item.id] = item;
+    });
+    let result = obj1.map(item => {
+      return { ...item, ...mapObject[item.id] };
+    });
+
+    // var mergedObj = [{ ...obj2, ...obj1 }];
+    console.log("mergedObj", result);
+
+    const a = [
+      {
+        show: false,
+        id: "name",
+        Header: "Name",
+        accessor: "name" // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
+      }
+    ];
+    const b = [
+      {
+        show: true,
+        id: "name",
+        Header: "Name",
+        accessor: "name" // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
+      },
+      {
+        id: "age",
+        show: true,
+        Header: "Age",
+        accessor: "age",
+        Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
+      },
+      {
+        show: true,
+        id: "friendName", // Khi accessor không phải là 1 chuỗi thì phải cung cấp id để đại diện cho thuộc tính cột.
+        Header: "Friend Name",
+        accessor: "friend.name" // Tùy biến giá trị đại diện cho giá trị của thuộc tính của phần tử ở cột này.
+      },
+      {
+        id: "friendAge",
+        show: true,
+        filterable: false,
+        Header: "Friend Age", // Tùy biến component Header
+        accessor: "friend.age" // Khi 1 thuộc tính của dữ liệu có kiểu là 1 đối tượng, chúng ta cũng có thể cung cấp đường dẫn đến thuộc tính cần lấy giá trị.
+      }
+    ];
+    const c = [{ ...b, ...a }];
+    console.log("c", c);
+
+    this.mountEvents();
+  }
+  componentDidUpdate() {
+    this.mountEvents();
+  }
 
   render() {
-    // $("table tr").each(function() {
-    //   var tr = $(this);
-    //   var td1 = tr.find("td:eq(1)"); // indices are zero-based here
-    //   var td2 = tr.find("td:eq(3)");
-    //   td1.detach().insertAfter(td2);
-    // });
     const { classes } = this.props;
     const { columns, dataCol } = this.state;
-    // dataCol = columns;
+    const dataShow = columns.filter(item => item.show === true);
     console.log("columnreder", columns);
-    // const sideList = (
-    //   <div className={classes.list}>
-    //     {this.names.map(name => (
-    //       <MenuItem key={name} value={name}>
-    //         <Checkbox
-    //           onChange={this.handleChange(name)}
-    //           value="name"
-    //           color="primary"
-    //         />
-
-    //         {name}
-    //       </MenuItem>
-    //     ))}
-    //   </div>
-    // );
+    console.log("dataShow", dataShow);
 
     return (
       <div style={{ margin: 30, width: "calc(100vw - 300px)" }}>
-        <HotTable
-          style={{ width: "100vw" }}
-          data={this.handsontableData}
-          width="calc(100vw - 200px)"
-          height="300"
-          stretchH="all"
-          manualColumnResize={true}
-          manualColumnMove={true}
-          maxRows={5}
-          colHeaders={["Nam", "Country", "Code", "Currency", "Level"]}
-          columnSorting={true}
-          filterable={true}
-          hiddenColumns={{
-            columns: [1, 2],
-            indicators: true
-          }}
-        />
         <br />
         {/* <Button onClick={this.toggleDrawer("right", true)}>Open Right</Button> */}
         <div style={{ textAlign: "right" }}>
@@ -329,86 +407,46 @@ class App extends React.Component {
         </div>
 
         <ReactTable
-          // getThProps={(state, rowInfo, column, instance) => {
-          //   return {
-          //     onClick: (e, handleOriginal) => {
-          //       console.log("A Td Element was clicked!");
-          //       console.log("it produced this event:", e);
-          //       console.log("It was in this column:", column);
-          //       console.log("It was in this row:", rowInfo);
-          //       console.log("It was in this table instance:", instance);
-
-          //       // IMPORTANT! React-Table uses onClick internally to trigger
-          //       // events like expanding SubComponents and pivots.
-          //       // By default a custom 'onClick' handler will override this functionality.
-          //       // If you want to fire the original onClick handler, call the
-          //       // 'handleOriginal' function.
-          //       if (handleOriginal) {
-          //         handleOriginal();
-          //       }
-          //     }
-          //   };
-          // }}
-          // getTrProps={(state, rowInfo, column) => {
-          //   return {
-          //     style: {
-          //       background: rowInfo.row.age > 24 ? "green" : "red"
-          //     }
-          //   };
-          // }}
-          hiddenColumns={[1]}
+          defaultPageSize={10}
+          row={() => console.log("dsfadsasd")}
           data={this.data}
-          columns={columns}
-          defaultPageSize={5}
+          resolveData={data => data.map(row => row)}
+          columns={dataShow}
           showPagination={true}
           sortable={true}
           filterable={true}
           colReorder={true}
-          resizable={false}
-
-          // filterAll={false}
+          resizable={true}
+          getTrGroupProps={(state, rowInfo, column, instance) => rowInfo}
+          className="-striped -highlight"
+          TrGroupComponent={customTrGroupComponent}
+          getTrProps={(state, rowInfo) => {
+            if (rowInfo && rowInfo.row) {
+              return {
+                onClick: e => {
+                  this.setState({
+                    selected: rowInfo.index
+                  });
+                },
+                style: {
+                  background:
+                    rowInfo.index === this.state.selected ? "#00afec" : "",
+                  color:
+                    rowInfo.index === this.state.selected ? "white" : "black"
+                }
+              };
+            } else {
+              return {};
+            }
+          }}
         />
-        <button onClick={this.handleClick}>click</button>
-        <div>
-          <div
-            id="example1"
-            class="hot handsontable htRowHeaders htColumnHeaders"
-          />
-          <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="select-multiple">Name</InputLabel>
-            <Select
-              multiple
-              value={this.state.name}
-              // onChange={this.handleChange}
-              input={<Input id="select-multiple" />}
-              MenuProps={MenuProps}
-            >
-              {this.names.map(name => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox
-                    checked={this.state.checkedShow}
-                    onChange={this.handleChange(name)}
-                    value="name"
-                    color="primary"
-                  />
-
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
+        <div />
         <Drawer
           anchor="right"
           open={this.state.right}
           onClose={this.toggleDrawer("right", false)}
         >
-          <div
-            tabIndex={0}
-            role="button"
-            // onClick={this.toggleDrawer("right", false)}
-            // onKeyDown={this.toggleDrawer("right", false)}
-          >
+          <div tabIndex={0} role="button">
             <h3 style={{ background: "#3f51b5", padding: 12, color: "white" }}>
               Chọn những cột cần ẩn
             </h3>
