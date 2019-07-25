@@ -2,24 +2,34 @@
   text-align: center;
 }
 
-/* .ReactTable .rt-tr .action {
+.ReactTable .rt-tbody .rt-td .action {
   transition: all 0.2s ease;
   text-align: center;
   color: red;
   transform: scale(0);
 }
 
-.ReactTable .rt-tr:hover .action {
+.ReactTable .rt-tbody .rt-td:hover .action {
   transform: scale(1.3);
 }
 
-/* .ReactTable .rt-tr:hover .rt-td {
-  background: #ebebeb;
-} */
-.ReactTable .rt-tr::selection .rt-td {
+.ReactTable .rt-td:hover {
   background: #ebebeb;
 }
-*/ .App-logo {
+.ReactTable .rt-td:focus {
+  background: blue;
+}
+.ReactTable .rt-td:active {
+  background: #cfcfcf;
+}
+.active {
+  background: #cfcfcf;
+}
+
+/* .ReactTable .rt-tbody .rt-td::selection {
+  background: #ebebeb;
+} */
+.App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 40vmin;
   pointer-events: none;

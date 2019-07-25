@@ -24,7 +24,32 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Drawer from "@material-ui/core/Drawer";
 import * as style from "./App.css";
+import $ from "jquery";
+var active = 0;
+$(document).keydown(e => {
+  console.log("keyselce");
+
+  reCalculate(e);
+  rePosition();
+  return false;
+});
+// $("rt-table").on("click", "rt-td", function() {
+//   alert("sdsd");
+// });
+// $(".rt-table").on("click", ".tr-td", function() {
+//   alert("ghgh");
+// });
+$(".rt-td").click(() => {
+  alert("clicked");
+  active = $(this)
+    .closest("ReactTable")
+    .find(".rt-td")
+    .index(this);
+  this.rePosition();
+});
 const customTrGroupComponent = props => {
+  // console.log("customTrGroupComponent", props);
+
   var extra_style = null;
   if (props.viewIndex % 2 == 0) {
     extra_style = {
@@ -83,10 +108,56 @@ function getStyles(name, that) {
         : that.props.theme.typography.fontWeightMedium
   };
 }
+const reCalculate = e => {
+  var rows = $(".rt-tbody .rt-tr-group").length;
+  var columns = $(".rt-tbody .rt-tr-group:eq(0) .rt-td").length;
+  // alert(columns + "x" + rows);
+
+  if (e.keyCode == 37) {
+    //move left or wrap
+    active = active > 0 ? active - 1 : active;
+    console.log("active left", active);
+  }
+  if (e.keyCode == 38) {
+    // move up
+    active = active - columns >= 0 ? active - columns : active;
+    console.log("active up", active);
+  }
+  if (e.keyCode == 39) {
+    // move right or wrap
+    active = active < columns * rows - 1 ? active + 1 : active;
+    console.log("active right", active);
+  }
+  if (e.keyCode == 40) {
+    // move down
+    active = active + columns <= rows * columns - 1 ? active + columns : active;
+    console.log("active dowwn", active);
+  }
+};
+const rePosition = () => {
+  $(".active").removeClass("active");
+  $(".rt-tbody .rt-tr-group .rt-td")
+    .eq(active)
+    .addClass("active")
+    .trigger("focus");
+  scrollInView();
+};
+const scrollInView = () => {
+  var target = $(".rt-tbody .rt-tr-group:eq(" + active + ")");
+  if (target.length) {
+    var top = target.offset().top;
+
+    $("html,body")
+      .stop()
+      .animate({ scrollTop: top - 100 }, 400);
+    return false;
+  }
+};
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      // active: 0,
       selected: null,
       checkedShow: true,
       right: false,
@@ -99,7 +170,15 @@ class App extends React.Component {
           Header: "Name",
           // headerStyle: { display: "none" },
           // show: isShow === false ? false : true,
-          accessor: "name" // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
+          accessor: "name", // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
+          Cell: row => {
+            // console.log("row", row);
+            return (
+              <div>
+                <span className="number">{row.value}</span>
+              </div>
+            );
+          }
         },
         {
           id: "age",
@@ -124,8 +203,8 @@ class App extends React.Component {
       ]
     };
   }
+
   toggleDrawer = (side, open) => () => {
-    console.log("this.state", this.state.columns);
     var obj1 = [
       {
         show: false,
@@ -163,7 +242,7 @@ class App extends React.Component {
     });
 
     // var mergedObj = [{ ...obj2, ...obj1 }];
-    console.log("mergedObj", result);
+    // console.log("mergedObj", result);
     // const c = [...b, this.state.columns];
     // console.log("ccccccccccccccc", c);
 
@@ -330,6 +409,9 @@ class App extends React.Component {
       { show: false, x: 13, id: 3 },
       { show: false, x: 23232, id: 2 }
     ];
+    let kk = obj1.map(item => {
+      return { ...item, ...obj2 };
+    });
     let mapObject = {};
     obj2.forEach(item => {
       mapObject[item.id] = item;
@@ -339,53 +421,29 @@ class App extends React.Component {
     });
 
     // var mergedObj = [{ ...obj2, ...obj1 }];
-    console.log("mergedObj", result);
-
-    const a = [
-      {
-        show: false,
-        id: "name",
-        Header: "Name",
-        accessor: "name" // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
-      }
-    ];
-    const b = [
-      {
-        show: true,
-        id: "name",
-        Header: "Name",
-        accessor: "name" // Cái này sẽ là đại diện cho giá trị của thuộc tính của phần tử ở cột này. Với thuộc tính đơn giản thì chỉ cần truyền vào key của đối tượng trong data.
-      },
-      {
-        id: "age",
-        show: true,
-        Header: "Age",
-        accessor: "age",
-        Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
-      },
-      {
-        show: true,
-        id: "friendName", // Khi accessor không phải là 1 chuỗi thì phải cung cấp id để đại diện cho thuộc tính cột.
-        Header: "Friend Name",
-        accessor: "friend.name" // Tùy biến giá trị đại diện cho giá trị của thuộc tính của phần tử ở cột này.
-      },
-      {
-        id: "friendAge",
-        show: true,
-        filterable: false,
-        Header: "Friend Age", // Tùy biến component Header
-        accessor: "friend.age" // Khi 1 thuộc tính của dữ liệu có kiểu là 1 đối tượng, chúng ta cũng có thể cung cấp đường dẫn đến thuộc tính cần lấy giá trị.
-      }
-    ];
-    const c = [{ ...b, ...a }];
-    console.log("c", c);
+    // console.log("mergedObj", result);
+    // console.log("kk", kk);
 
     this.mountEvents();
   }
   componentDidUpdate() {
+    console.log("uppppppppppppppppppp");
+
+    console.log("active", active);
     this.mountEvents();
   }
+  componentWillReceiveProps() {
+    $(".rt-td").click(() => {
+      console.log("click");
 
+      active = $(this)
+        .closest("table")
+        .find(".rt-td")
+        .index(this);
+      rePosition();
+    });
+    console.log("componentWillReceiveProps");
+  }
   render() {
     const { classes } = this.props;
     const { columns, dataCol } = this.state;
@@ -408,7 +466,6 @@ class App extends React.Component {
 
         <ReactTable
           defaultPageSize={10}
-          row={() => console.log("dsfadsasd")}
           data={this.data}
           resolveData={data => data.map(row => row)}
           columns={dataShow}
@@ -417,28 +474,58 @@ class App extends React.Component {
           filterable={true}
           colReorder={true}
           resizable={true}
-          getTrGroupProps={(state, rowInfo, column, instance) => rowInfo}
-          className="-striped -highlight"
-          TrGroupComponent={customTrGroupComponent}
-          getTrProps={(state, rowInfo) => {
-            if (rowInfo && rowInfo.row) {
-              return {
-                onClick: e => {
-                  this.setState({
-                    selected: rowInfo.index
-                  });
-                },
-                style: {
-                  background:
-                    rowInfo.index === this.state.selected ? "#00afec" : "",
-                  color:
-                    rowInfo.index === this.state.selected ? "white" : "black"
+          // className="hjhj"
+          // getTrGroupProps={(state, rowInfo, column, instance) => rowInfo}
+          // className="-striped -highlight"
+          // TrGroupComponent={customTrGroupComponent}
+          getTdProps={(state, rowInfo, column, instance, index) => {
+            return {
+              onClick: (e, handleOriginal) => {
+                // this.setState({
+                //   selected: rowInfo.index
+                // });
+                // console.log("A Td Element was clicked!");
+                console.log("it produced this event:", e);
+                console.log("It was in this column:", column);
+                console.log("It was in this row:", rowInfo);
+                // console.log("It was in this table instance:", instance);
+
+                // IMPORTANT! React-Table uses onClick internally to trigger
+                // events like expanding SubComponents and pivots.
+                // By default a custom 'onClick' handler will override this functionality.
+                // If you want to fire the original onClick handler, call the
+                // 'handleOriginal' function.
+                if (handleOriginal) {
+                  // $(".rt-td").click(() => {
+                  //   alert(this);
+                  //   active = rowInfo.index;
+                  //   rePosition();
+                  // });
+                  console.log("aac", active);
                 }
-              };
-            } else {
-              return {};
-            }
+              },
+              selected: rowInfo.index
+            };
           }}
+          // getTrProps={(state, rowInfo) => {
+          //   if (rowInfo && rowInfo.row) {
+          //     return {
+          //       // onClick: e => {
+          //       //   this.setState({
+          //       //     selected: rowInfo.index
+          //       //   });
+          //       // },
+          //       // style: {
+          //       //   background:
+          //       //     rowInfo.index === this.state.selected ? "#00afec" : "",
+          //       //   color:
+          //       //     rowInfo.index === this.state.selected ? "white" : "black"
+          //       // }
+          //     };
+          //   } else {
+          //     return {};
+          //   }
+          // }}
         />
         <div />
         <Drawer
