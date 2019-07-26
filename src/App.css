@@ -20,10 +20,12 @@
   background: blue;
 }
 .ReactTable .rt-td:active {
-  background: #cfcfcf;
+  background: #288ffe;
 }
 .active {
-  background: #cfcfcf;
+  background: #288ffe !important;
+  color: white !important;
+  font-weight: bold;
 }
 
 /* .ReactTable .rt-tbody .rt-td::selection {

@@ -24,44 +24,9 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Drawer from "@material-ui/core/Drawer";
 import * as style from "./App.css";
+import TextField from "@material-ui/core/TextField";
 import $ from "jquery";
-var active = 0;
-$(document).keydown(e => {
-  console.log("keyselce");
-
-  reCalculate(e);
-  rePosition();
-  return false;
-});
-// $(".rt-td").click(() => {
-//   alert("sdsd");
-// });
-// $(".rt-table").on("click", ".tr-td", () => {
-//   alert("ghgh");
-// });
-// $(".rt-td").click(() => {
-//   alert("clicked");
-//   active = $(this)
-//     .closest("ReactTable")
-//     .find(".rt-td")
-//     .index(this);
-//   this.rePosition();
-// });
-const customTrGroupComponent = props => {
-  // console.log("customTrGroupComponent", props);
-
-  var extra_style = null;
-  if (props.viewIndex % 2 == 0) {
-    extra_style = {
-      // backgroundColor: "#ebebeb"
-    };
-  }
-  return (
-    <div className="rt-tr-group" style={extra_style}>
-      {props.children}
-    </div>
-  );
-};
+var active = undefined;
 const styles = theme => ({
   list: {
     width: 250
@@ -90,48 +55,37 @@ const styles = theme => ({
   }
 });
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
-function getStyles(name, that) {
-  return {
-    fontWeight:
-      that.state.name.indexOf(name) === -1
-        ? that.props.theme.typography.fontWeightRegular
-        : that.props.theme.typography.fontWeightMedium
-  };
-}
 const reCalculate = e => {
   var rows = $(".rt-tbody .rt-tr-group").length;
   var columns = $(".rt-tbody .rt-tr-group:eq(0) .rt-td").length;
   // alert(columns + "x" + rows);
+  switch (e.keyCode) {
+    case 37:
+      console.log("37");
+      // move left or wrap
+      active = active > 0 ? active - 1 : active;
+      console.log("active left", active);
+      break;
+    case 38:
+      // move up
+      active = active - columns >= 0 ? active - columns : active;
+      console.log("active up", active);
+      break;
+    case 39:
+      // move right or wrap
+      active = active < columns * rows - 1 ? active + 1 : active;
+      console.log("active right", active);
+      break;
+    case 40:
+      // move down
+      active =
+        active + columns <= rows * columns - 1 ? active + columns : active;
+      console.log("active dowwn", active);
+      break;
 
-  if (e.keyCode == 37) {
-    //move left or wrap
-    active = active > 0 ? active - 1 : active;
-    console.log("active left", active);
-  }
-  if (e.keyCode == 38) {
-    // move up
-    active = active - columns >= 0 ? active - columns : active;
-    console.log("active up", active);
-  }
-  if (e.keyCode == 39) {
-    // move right or wrap
-    active = active < columns * rows - 1 ? active + 1 : active;
-    console.log("active right", active);
-  }
-  if (e.keyCode == 40) {
-    // move down
-    active = active + columns <= rows * columns - 1 ? active + columns : active;
-    console.log("active dowwn", active);
+    default:
+      e.preventDefault();
+      break;
   }
 };
 const rePosition = () => {
@@ -252,7 +206,6 @@ class App extends React.Component {
     });
   };
 
-  names = ["name", "age", "friendName", "friendAge"];
   data = [
     {
       name: "Nguyen Van A",
@@ -400,17 +353,6 @@ class App extends React.Component {
     });
   }
   componentDidMount() {
-    // $(".rt-td").click(() => {
-    //   console.log("clickedsdsd");
-    //   active = $(this)
-    //     .closest(".rt-table")
-    //     .find("rt-td")
-    //     .index(this);
-    //   console.log("ac", active);
-
-    rePosition();
-    // });
-
     var obj1 = [
       { show: true, x: 4223, id: 1 },
       { show: true, x: 422233, id: 2 },
@@ -430,33 +372,38 @@ class App extends React.Component {
     let result = obj1.map(item => {
       return { ...item, ...mapObject[item.id] };
     });
-
-    // var mergedObj = [{ ...obj2, ...obj1 }];
-    // console.log("mergedObj", result);
-    // console.log("kk", kk);
-
     this.mountEvents();
+    document.addEventListener("keydown", e => this.keydown(e));
+    document.addEventListener("click", e => {
+      console.log("eeeeeeeeeeeeeeeeeeeee", e);
+
+      if (e.target.nodeName === "INPUT") {
+        console.log("iiiiiiiiiiii");
+        document.removeEventListener("keydown", {});
+      }
+      console.log("click ne0", e);
+      // document.removeEventListener("keydown", () => {
+      //   console.log("huy");
+      // });
+    });
+  }
+  keydown(e) {
+    console.log("keyselce", e);
+    reCalculate(e);
+    rePosition();
+    return false;
   }
   componentDidUpdate() {
-    console.log("uppppppppppppppppppp");
-
-    console.log("active", active);
     this.mountEvents();
-  }
-  componentWillReceiveProps() {
-    console.log("componentWillReceiveProps");
   }
   render() {
     const { classes } = this.props;
     const { columns, dataCol } = this.state;
     const dataShow = columns.filter(item => item.show === true);
-    console.log("columnreder", columns);
-    console.log("dataShow", dataShow);
 
     return (
       <div style={{ margin: 30, width: "calc(100vw - 300px)" }}>
         <br />
-        {/* <Button onClick={this.toggleDrawer("right", true)}>Open Right</Button> */}
         <div style={{ textAlign: "right" }}>
           <Button
             variant="contained"
@@ -476,6 +423,15 @@ class App extends React.Component {
           filterable={true}
           colReorder={true}
           resizable={true}
+          filterMethod={(filter, row) => {
+            console.log("hjhj");
+          }}
+          // defaultFilterMethod={() => {}}
+          defaultSortMethod={() => {
+            active = undefined;
+            rePosition();
+            // console.log("active", active);
+          }}
           // className="hjhj"
           // getTrGroupProps={(state, rowInfo, column, instance) => rowInfo}
           // className="-striped -highlight"
@@ -486,13 +442,13 @@ class App extends React.Component {
                 // this.setState({
                 //   selected: rowInfo.index
                 // });
-                console.log(
-                  "inde",
-                  dataShow.findIndex(i => i.id === column.id)
-                );
-                console.log("it produced this event:", e);
-                console.log("It was in this row:", rowInfo);
-                console.log("It was in this table instance:", instance);
+                // console.log(
+                //   "indecolunm",
+                //   dataShow.findIndex(i => i.id === column.id)
+                // );
+                // console.log(" rowInfo.index:", rowInfo.viewIndex);
+                // console.log("It was in this row:", rowInfo);
+                // console.log("It was in this table instance:", instance);
 
                 // IMPORTANT! React-Table uses onClick internally to trigger
                 // events like expanding SubComponents and pivots.
@@ -502,50 +458,16 @@ class App extends React.Component {
                 if (handleOriginal) {
                   active =
                     dataShow.findIndex(i => i.id === column.id) +
-                    rowInfo.index * dataShow.length;
-                  // $(".rt-td").click(() => {
-                  //   console.log("clickedsdsd");
-                  // active = $(index)
-                  //   .closest(".rt-tbody")
-                  //   .find(".rt-td")
-                  //   .index(index);
-                  // alert(active);
+                    rowInfo.viewIndex * dataShow.length;
+                  reCalculate(e);
                   rePosition();
-                  console.log("ac", active);
-                  console.log("columns", dataShow);
-                  // });
-                  // $(".rt-td").click(() => {
-                  //   alert(this);
-                  //   active = rowInfo.index;
-                  //   rePosition();
-                  // });
-                  // console.log("aac", active);
                 }
-              },
-              selected: rowInfo.index
+              }
             };
           }}
-          // getTrProps={(state, rowInfo) => {
-          //   if (rowInfo && rowInfo.row) {
-          //     return {
-          //       // onClick: e => {
-          //       //   this.setState({
-          //       //     selected: rowInfo.index
-          //       //   });
-          //       // },
-          //       // style: {
-          //       //   background:
-          //       //     rowInfo.index === this.state.selected ? "#00afec" : "",
-          //       //   color:
-          //       //     rowInfo.index === this.state.selected ? "white" : "black"
-          //       // }
-          //     };
-          //   } else {
-          //     return {};
-          //   }
-          // }}
         />
         <div />
+        <TextField id="standard-name" label="Name" margin="normal" />
         <Drawer
           anchor="right"
           open={this.state.right}
