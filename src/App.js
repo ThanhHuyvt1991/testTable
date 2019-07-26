@@ -33,20 +33,20 @@ $(document).keydown(e => {
   rePosition();
   return false;
 });
-// $("rt-table").on("click", "rt-td", function() {
+// $(".rt-td").click(() => {
 //   alert("sdsd");
 // });
-// $(".rt-table").on("click", ".tr-td", function() {
+// $(".rt-table").on("click", ".tr-td", () => {
 //   alert("ghgh");
 // });
-$(".rt-td").click(() => {
-  alert("clicked");
-  active = $(this)
-    .closest("ReactTable")
-    .find(".rt-td")
-    .index(this);
-  this.rePosition();
-});
+// $(".rt-td").click(() => {
+//   alert("clicked");
+//   active = $(this)
+//     .closest("ReactTable")
+//     .find(".rt-td")
+//     .index(this);
+//   this.rePosition();
+// });
 const customTrGroupComponent = props => {
   // console.log("customTrGroupComponent", props);
 
@@ -143,7 +143,7 @@ const rePosition = () => {
   scrollInView();
 };
 const scrollInView = () => {
-  var target = $(".rt-tbody .rt-tr-group:eq(" + active + ")");
+  var target = $("rt-tbody rt-tr-group rt-td:eq(" + active + ")");
   if (target.length) {
     var top = target.offset().top;
 
@@ -400,6 +400,17 @@ class App extends React.Component {
     });
   }
   componentDidMount() {
+    // $(".rt-td").click(() => {
+    //   console.log("clickedsdsd");
+    //   active = $(this)
+    //     .closest(".rt-table")
+    //     .find("rt-td")
+    //     .index(this);
+    //   console.log("ac", active);
+
+    rePosition();
+    // });
+
     var obj1 = [
       { show: true, x: 4223, id: 1 },
       { show: true, x: 422233, id: 2 },
@@ -433,15 +444,6 @@ class App extends React.Component {
     this.mountEvents();
   }
   componentWillReceiveProps() {
-    $(".rt-td").click(() => {
-      console.log("click");
-
-      active = $(this)
-        .closest("table")
-        .find(".rt-td")
-        .index(this);
-      rePosition();
-    });
     console.log("componentWillReceiveProps");
   }
   render() {
@@ -477,18 +479,20 @@ class App extends React.Component {
           // className="hjhj"
           // getTrGroupProps={(state, rowInfo, column, instance) => rowInfo}
           // className="-striped -highlight"
-          // TrGroupComponent={customTrGroupComponent}
+          // TrGroupComponent={customTrGroupComponent
           getTdProps={(state, rowInfo, column, instance, index) => {
             return {
               onClick: (e, handleOriginal) => {
                 // this.setState({
                 //   selected: rowInfo.index
                 // });
-                // console.log("A Td Element was clicked!");
+                console.log(
+                  "inde",
+                  dataShow.findIndex(i => i.id === column.id)
+                );
                 console.log("it produced this event:", e);
-                console.log("It was in this column:", column);
                 console.log("It was in this row:", rowInfo);
-                // console.log("It was in this table instance:", instance);
+                console.log("It was in this table instance:", instance);
 
                 // IMPORTANT! React-Table uses onClick internally to trigger
                 // events like expanding SubComponents and pivots.
@@ -496,12 +500,26 @@ class App extends React.Component {
                 // If you want to fire the original onClick handler, call the
                 // 'handleOriginal' function.
                 if (handleOriginal) {
+                  active =
+                    dataShow.findIndex(i => i.id === column.id) +
+                    rowInfo.index * dataShow.length;
+                  // $(".rt-td").click(() => {
+                  //   console.log("clickedsdsd");
+                  // active = $(index)
+                  //   .closest(".rt-tbody")
+                  //   .find(".rt-td")
+                  //   .index(index);
+                  // alert(active);
+                  rePosition();
+                  console.log("ac", active);
+                  console.log("columns", dataShow);
+                  // });
                   // $(".rt-td").click(() => {
                   //   alert(this);
                   //   active = rowInfo.index;
                   //   rePosition();
                   // });
-                  console.log("aac", active);
+                  // console.log("aac", active);
                 }
               },
               selected: rowInfo.index
