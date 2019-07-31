@@ -2,7 +2,7 @@
   text-align: center;
 }
 
-.ReactTable .rt-tbody .rt-td .action {
+/* .ReactTable .rt-tbody .rt-td .action {
   transition: all 0.2s ease;
   text-align: center;
   color: red;
@@ -26,7 +26,7 @@
   background: #288ffe !important;
   color: white !important;
   font-weight: bold;
-}
+} */
 
 /* .ReactTable .rt-tbody .rt-td::selection {
   background: #ebebeb;

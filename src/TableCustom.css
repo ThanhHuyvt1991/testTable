@@ -1,0 +1,26 @@
+.ReactTable .rt-tbody .rt-td .action {
+  transition: all 0.2s ease;
+  text-align: center;
+  color: red;
+  transform: scale(0);
+}
+
+.ReactTable .rt-tbody .rt-td:hover .action {
+  transform: scale(1.3);
+}
+
+.ReactTable .rt-td:hover {
+  background: #ebebeb;
+  cursor: pointer;
+}
+.ReactTable .rt-td:focus {
+  background: blue;
+}
+.ReactTable .rt-td:active {
+  background: #288ffe;
+}
+.active {
+  background: #288ffe !important;
+  color: white !important;
+  font-weight: bold;
+}
