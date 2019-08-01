@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React from "react";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
@@ -6,7 +7,6 @@ import PropTypes from "prop-types";
 import MenuItem from "@material-ui/core/MenuItem";
 import { Checkbox, Button } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
-import $ from "jquery";
 import * as style from "./test.css";
 var active = 0;
 

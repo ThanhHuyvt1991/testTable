@@ -25,7 +25,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Drawer from "@material-ui/core/Drawer";
 import * as style from "./App.css";
 import TextField from "@material-ui/core/TextField";
-import $ from "jquery";
 import TableCustom from "./TableCustom";
 import Test from "./test";
 

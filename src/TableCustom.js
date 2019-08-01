@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React from "react";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
@@ -6,7 +7,6 @@ import PropTypes from "prop-types";
 import MenuItem from "@material-ui/core/MenuItem";
 import { Checkbox, Button } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
-import $ from "jquery";
 import * as style from "./TableCustom.css";
 var active = undefined;
 const styles = theme => ({});
@@ -22,14 +22,20 @@ class TableCustom extends React.Component {
       right: false,
       name: []
     };
+    this.colLength = 0;
   }
   activeKeyCode = e => {
     var rows = $(".rt-tbody .rt-tr-group").length;
     var columns = $(".rt-tbody .rt-tr-group:eq(0) .rt-td").length;
+    console.log("row", rows);
+    console.log("columns", columns);
+
     switch (e.keyCode) {
       case 37:
         // move left or wrap
         active = active > 0 ? active - 1 : active;
+        console.log("ac", active);
+
         break;
       case 38:
         // move up
@@ -38,7 +44,7 @@ class TableCustom extends React.Component {
       case 39:
         // move right or wrap
         active = active < columns * rows - 1 ? active + 1 : active;
-        this.scrollWin(400, 0);
+        // this.scrollWin(400, 0);
         break;
       case 40:
         // move down
@@ -50,6 +56,7 @@ class TableCustom extends React.Component {
         e.preventDefault();
         break;
     }
+    this.scrollInView(rows);
   };
   scrollWin = (x, y) => {
     window.scrollBy(x, y);
@@ -60,10 +67,32 @@ class TableCustom extends React.Component {
       .eq(active)
       .addClass("active")
       .trigger("focus");
-    this.scrollInView();
   };
   scrollInView = () => {
-    scrollIntoView($(".rt-tbody .rt-tr-group .rt-td:eq(" + active + ")"));
+    console.log("active", active);
+    console.log("active / this.colLength", parseInt(active / this.colLength));
+    console.log("active % this.colLength", active % this.colLength);
+
+    const ele = $(
+      `.rt-tbody .rt-tr-group:eq(${parseInt(
+        active / this.colLength
+      )}) .rt-tr .rt-td:eq(${active % this.colLength})`
+    )[0];
+    // $(".rt-table").animate(
+    //   {
+    //     scrollLeft: $(ele).offset().left
+    //   },
+    //   100
+    // );
+    // var l = $(ele).offset().left;
+    // var t = $(ele).offset().top;
+    // console.log("lè", l);
+    ele.scrollIntoView();
+    // $(".rt-table")
+    //   .stop()
+    //   .animate({ scrollLeft: l }, 400);
+    // return false;
+    // scrollIntoView($(".rt-tbody .rt-tr-group .rt-td:eq(" + active + ")"));
     // var target = $(".rt-tbody .rt-tr-group .rt-td:eq(" + active + ")");
     // console.log("target.active", active);
     // console.log("target.length", target.length);
@@ -72,7 +101,6 @@ class TableCustom extends React.Component {
     //   var x = e.scrollLeft;
     //   console.log("x", x);
     //   e.scrollIntoView({ behavior: "smooth", inline: "start" });
-
     // var left = target.offset().left;
     // console.log("left", left);
     // $("html,body")
@@ -161,6 +189,7 @@ class TableCustom extends React.Component {
     // }
   }
   keydown = e => {
+    e.preventDefault();
     this.activeKeyCode(e);
     this.rePosition();
     return false;
@@ -172,9 +201,9 @@ class TableCustom extends React.Component {
     const { dataColum } = this.state;
     const { dataBody, dataColumnProps } = this.props;
     const dataShow = dataColum.filter(item => item.show === true);
-
+    this.colLength = dataShow.length;
     return (
-      <div style={{ margin: 30, width: "calc(100vw - 300px)" }}>
+      <div style={{ margin: 30 }}>
         <br />
         <div style={{ textAlign: "right" }}>
           <Button
@@ -216,7 +245,7 @@ class TableCustom extends React.Component {
                     dataShow.findIndex(i => i.id === column.id)
                   );
 
-                  this.activeKeyCode(e);
+                  // this.activeKeyCode(e);
                   this.rePosition();
                 }
               }
