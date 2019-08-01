@@ -10,6 +10,7 @@ import $ from "jquery";
 import * as style from "./TableCustom.css";
 var active = undefined;
 const styles = theme => ({});
+var scrollIntoView = require("scroll-into-view");
 
 class TableCustom extends React.Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class TableCustom extends React.Component {
       case 39:
         // move right or wrap
         active = active < columns * rows - 1 ? active + 1 : active;
+        this.scrollWin(400, 0);
         break;
       case 40:
         // move down
@@ -49,6 +51,9 @@ class TableCustom extends React.Component {
         break;
     }
   };
+  scrollWin = (x, y) => {
+    window.scrollBy(x, y);
+  };
   rePosition = () => {
     $(".active").removeClass("active");
     $(".rt-tbody .rt-tr-group .rt-td")
@@ -58,14 +63,23 @@ class TableCustom extends React.Component {
     this.scrollInView();
   };
   scrollInView = () => {
-    var target = $("rt-tbody rt-tr-group rt-td:eq(" + active + ")");
-    if (target.length) {
-      var top = target.offset().top;
-      $("html,body")
-        .stop()
-        .animate({ scrollTop: top - 100 }, 400);
-      return false;
-    }
+    scrollIntoView($(".rt-tbody .rt-tr-group .rt-td:eq(" + active + ")"));
+    // var target = $(".rt-tbody .rt-tr-group .rt-td:eq(" + active + ")");
+    // console.log("target.active", active);
+    // console.log("target.length", target.length);
+    // if (target.length) {
+    //   var e = document.getElementById("hjhj");
+    //   var x = e.scrollLeft;
+    //   console.log("x", x);
+    //   e.scrollIntoView({ behavior: "smooth", inline: "start" });
+
+    // var left = target.offset().left;
+    // console.log("left", left);
+    // $("html,body")
+    //   .stop()
+    //   .animate({ scrollLeft: left + 300 }, 400);
+    // return false;
+    // }
   };
   toggleDrawer = (side, open) => () => {
     this.setState({
@@ -129,6 +143,7 @@ class TableCustom extends React.Component {
     });
   }
   componentDidMount() {
+    $(".rt-tbody").attr("id", "hjhj");
     if (this.props.dataColumnProps) {
       this.setState({
         dataColum: this.props.dataColumnProps

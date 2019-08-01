@@ -27,6 +27,7 @@ import * as style from "./App.css";
 import TextField from "@material-ui/core/TextField";
 import $ from "jquery";
 import TableCustom from "./TableCustom";
+import Test from "./test";
 
 const styles = theme => ({});
 
@@ -37,6 +38,7 @@ class App extends React.Component {
       columns: [
         {
           // style: { textAlign: "right" },
+          minWidth: 400,
           show: true,
           id: "name",
           Header: "Name",
@@ -53,19 +55,16 @@ class App extends React.Component {
           }
         },
         {
+          minWidth: 400,
           id: "age",
           show: true,
           Header: "Age",
           accessor: "age",
           Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
         },
+        { minWidth: 400, id: "a", show: true, Header: "Age", accessor: "age" },
         {
-          id: "a",
-          show: true,
-          Header: "Age",
-          accessor: "age"
-        },
-        {
+          minWidth: 400,
           id: "b",
           show: true,
           Header: "Age",
@@ -73,6 +72,7 @@ class App extends React.Component {
           Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
         },
         {
+          minWidth: 400,
           id: "c",
           show: true,
           Header: "Age",
@@ -80,6 +80,7 @@ class App extends React.Component {
           Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
         },
         {
+          minWidth: 400,
           id: "d",
           show: true,
           Header: "Age",
@@ -87,6 +88,7 @@ class App extends React.Component {
           Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
         },
         {
+          minWidth: 400,
           id: "e",
           show: true,
           Header: "Age",
@@ -101,6 +103,7 @@ class App extends React.Component {
           Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
         },
         {
+          minWidth: 400,
           id: "h",
           show: true,
           Header: "Age",
@@ -108,6 +111,7 @@ class App extends React.Component {
           Cell: props => <span className="number">{props.value}</span> // Tùy biến component Cell.
         },
         {
+          minWidth: 400,
           id: "i",
           show: true,
           Header: "Age",
@@ -133,6 +137,83 @@ class App extends React.Component {
   }
 
   data = [
+    {
+      name: "Nguyen Van A",
+      age: 26,
+      friend: {
+        name: "Do Van C",
+        age: 23
+      }
+    },
+    {
+      name: "Nguyen Van A",
+      age: null,
+      friend: {
+        name: "Do Van C",
+        age: 23
+      }
+    },
+    {
+      name: "Nguyen ăeVan A",
+      age: 26,
+      friend: {
+        name: "Do Van C",
+        age: 23
+      }
+    },
+    {
+      name: "Nguyen Vaasdasn A",
+      age: 26,
+      friend: {
+        name: "Do Van C",
+        age: 23
+      }
+    },
+    {
+      name: "Nguyen Vaádasn A",
+      age: 26,
+      friend: {
+        name: "Do Van C",
+        age: 23
+      }
+    },
+
+    {
+      name: "Dao Thi B",
+      age: 22
+    },
+    {
+      name: "Tran Duc C",
+      age: 25,
+      friend: {
+        name: "Ngo Thanh E",
+        age: 25
+      }
+    },
+    {
+      name: "Le Tien N",
+      age: 27,
+      friend: {
+        name: "Cao Cong G",
+        age: 24
+      }
+    },
+    {
+      name: "Pham Hoang M",
+      age: 26,
+      friend: {
+        name: "Lai Hai D",
+        age: 25
+      }
+    },
+    {
+      name: "Duong Van L",
+      age: 23,
+      friend: {
+        name: "Le Hoang M",
+        age: 23
+      }
+    },
     {
       name: "Nguyen Van A",
       age: 26,
@@ -268,7 +349,12 @@ class App extends React.Component {
   render() {
     const { columns } = this.state;
 
-    return <TableCustom dataBody={this.data} dataColumnProps={columns} />;
+    return (
+      // <React.Fragment>
+      <TableCustom dataBody={this.data} dataColumnProps={columns} />
+
+      // </React.Fragment>
+    );
   }
 }
 
