@@ -17,17 +17,31 @@ import {
   Switch,
   FormControlLabel,
   InputLabel,
-  FormControl,
-  Select,
   Input,
-  NativeSelect
+  NativeSelect,
+  InputAdornment
 } from "@material-ui/core";
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import "react-table-hoc-fixed-columns/lib/styles.css";
 import clone from "clone";
 import Info from "@material-ui/icons/Info";
 import BorderColor from "@material-ui/icons/BorderColor";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import ListItemText from "@material-ui/core/ListItemText";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
 class Project extends React.Component {
   constructor(props) {
     super(props);
@@ -40,10 +54,45 @@ class Project extends React.Component {
       selected: null,
       titleName: "",
       name: "",
-      datas: []
+      datas: [],
+      nametest: []
     };
   }
   projectType = ["Online", "Offline", "Online+Offline"];
+  projectTerm = ["One Time", "Long Term", "Frequent"];
+  frequency = ["f1", "f2", "f3"];
+  connectionMethod = ["VPN", "Web Application", "Customer's System"];
+  offProjectApp = ["DGS1", "DGS 3", "Extra tool", "PMS"];
+  billingUnit = [
+    "Record",
+    "Field",
+    "Document",
+    "Per 1,000 Characters",
+    "Image",
+    "Line Item"
+  ];
+  currency = ["USD", "EUR", "VND", "JPY"];
+  creditTerm = [
+    "15 Days",
+    "30 Days",
+    "45 Days",
+    "60 Days",
+    "75 Days",
+    "90 Days"
+  ];
+  rateOT = ["None", "150%", "200%", "300%", , "Others"];
+  rateHoliday = ["None", "150%", "200%", "300%", , "Others"];
+  projectComplex = ["1", "2", "3", "4"];
+  requireOperation = ["Phong Rieng", "Camera", "ISO", "Others"];
+  requireDeliver = ["None", "sFTP", "FTP"];
+  contractType = [
+    "NDA",
+    "GSA",
+    "ISA",
+    "SOW",
+    "Quotation",
+    "Email Confirmation"
+  ];
   data = [
     {
       project_code: 45,
@@ -107,6 +156,10 @@ class Project extends React.Component {
       accessor: "project_term" // String-based value accessors!
     },
     {
+      Header: "Frequency",
+      accessor: "frequency"
+    },
+    {
       Header: "Start Date",
       accessor: "start_date" // String-based value accessors!
     },
@@ -131,6 +184,14 @@ class Project extends React.Component {
       accessor: "volume" // String-based value accessors!
     },
     {
+      Header: "Billing Unit",
+      accessor: "billing_unit"
+    },
+    {
+      Header: "Types Number",
+      accessor: "type_of_form_numb"
+    },
+    {
       Header: "Currency",
       accessor: "currency" // String-based value accessors!
     },
@@ -149,6 +210,10 @@ class Project extends React.Component {
     {
       Header: "Other Services",
       accessor: "other_services" // String-based value accessors!
+    },
+    {
+      Header: "Target Speed",
+      accessor: "target_speed"
     },
     {
       Header: "Project Complex",
@@ -177,6 +242,22 @@ class Project extends React.Component {
     {
       Header: "Planned FTE",
       accessor: "planned_fte" // String-based value accessors!
+    },
+    {
+      Header: "Security Requirement Delivery",
+      accessor: "security_require_delivery"
+    },
+    {
+      Header: "Security Requirement Operation",
+      accessor: "security_require_operation"
+    },
+    {
+      Header: "Security Requirement Communication",
+      accessor: "security_require_communication"
+    },
+    {
+      Header: "contract Type",
+      accessor: "contract_type"
     },
 
     {
@@ -346,7 +427,7 @@ class Project extends React.Component {
               style={{ borderBottom: "1px solid #e0e0e0" }}
             >
               <Grid container spacing={24}>
-                <Grid item xs={6} style={{ position: "relative" }}>
+                <Grid item xs={12} md={6} style={{ position: "relative" }}>
                   {this.state.titleName}
                   <FormControlLabel
                     style={{ position: "absolute", top: 30, left: 12 }}
@@ -354,7 +435,7 @@ class Project extends React.Component {
                     label="Active"
                   />
                 </Grid>
-                <Grid item xs={6} style={{ textAlign: "right" }}>
+                <Grid item xs={12} md={6} style={{ textAlign: "right" }}>
                   <Button
                     onClick={this.handleClose}
                     variant="contained"
@@ -375,13 +456,14 @@ class Project extends React.Component {
             </DialogTitle>
             <DialogContent>
               <Grid container spacing={24} style={{ paddingTop: 12 }}>
-                <Grid item xs={4}>
+                <Grid item xs={12}>
                   <h3 style={{ margin: 0, color: "#2196f3" }}>Info Project:</h3>
+                </Grid>
+                <Grid item xs={12} md={4}>
                   <div style={{ width: "100%" }}>
                     <TextField
                       style={{ width: "30%", paddingRight: 16 }}
                       autoFocus
-                      margin="dense"
                       name="project_code"
                       label="Project Code"
                       type="number"
@@ -391,7 +473,6 @@ class Project extends React.Component {
                     />
                     <TextField
                       style={{ width: "70%" }}
-                      margin="dense"
                       name="project_name"
                       label="Project Name"
                       maxLength="3"
@@ -400,7 +481,6 @@ class Project extends React.Component {
                       onChange={this.handleChange}
                     />
                     <TextField
-                      margin="dense"
                       fullWidth
                       name="customer_name"
                       label="Customer Name"
@@ -411,7 +491,6 @@ class Project extends React.Component {
                     />
                   </div>
                   <TextField
-                    margin="dense"
                     name="description"
                     label="Descreption"
                     fullWidth
@@ -420,7 +499,6 @@ class Project extends React.Component {
                     onChange={this.handleChange}
                   />
                   <TextField
-                    margin="dense"
                     name="contact_name"
                     label="Contact Name"
                     fullWidth
@@ -429,7 +507,6 @@ class Project extends React.Component {
                     onChange={this.handleChange}
                   />
                   <TextField
-                    margin="dense"
                     name="position_contact_per"
                     label="Position of Contact Person"
                     fullWidth
@@ -438,7 +515,6 @@ class Project extends React.Component {
                     onChange={this.handleChange}
                   />
                   <TextField
-                    margin="dense"
                     name="phone_contact_per"
                     label="Phone of Contact Person"
                     type="number"
@@ -448,7 +524,6 @@ class Project extends React.Component {
                     onChange={this.handleChange}
                   />
                   <TextField
-                    margin="dense"
                     name="email_contact_per"
                     label="Email of Contact Person"
                     fullWidth
@@ -456,32 +531,67 @@ class Project extends React.Component {
                     value={infoProject.email_contact_per}
                     onChange={this.handleChange}
                   />
-                  <TextField
-                    margin="dense"
-                    name="project_term"
-                    label="Project Term"
-                    fullWidth
-                    disabled={isInfo}
-                    value={infoProject.project_term}
-                    onChange={this.handleChange}
-                  />
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="age-native-simple">
+                      Project Term
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="project_term"
+                      defaultValue={infoProject.project_term}
+                      input={
+                        <Input name="project_term" id="uncontrolled-native" />
+                      }
+                    >
+                      <option value="" />
+                      {this.projectTerm.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+                  {infoProject.project_term === "Frequent" && (
+                    <FormControl style={{ width: "100%" }}>
+                      <InputLabel htmlFor="age-native-simple">
+                        Frequency
+                      </InputLabel>
+                      <NativeSelect
+                        onChange={this.handleChange}
+                        name="frequency"
+                        defaultValue={infoProject.frequency}
+                        input={
+                          <Input name="frequency" id="uncontrolled-native" />
+                        }
+                      >
+                        <option value="" />
+                        {this.frequency.map(item => (
+                          <option>{item}</option>
+                        ))}
+                      </NativeSelect>
+                    </FormControl>
+                  )}
+
                   <div style={{ width: "100%" }}>
                     <TextField
                       style={{ width: "50%", paddingRight: 16 }}
                       name="start_date"
                       label="Start Date"
                       type="date"
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                       fullWidth
                       disabled={isInfo}
                       defaultValue={infoProject.start_date}
                       onChange={this.handleChange}
                     />
                     <TextField
-                      margin="dense"
                       style={{ width: "50%" }}
                       name="end_date"
                       label="End Date"
                       fullWidth
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                       type="date"
                       disabled={isInfo}
                       defaultValue={infoProject.end_date}
@@ -489,7 +599,7 @@ class Project extends React.Component {
                     />
                   </div>
                 </Grid>
-                <Grid item xs={4} style={{ paddingTop: 33 }}>
+                <Grid item xs={12} md={4} style={{ paddingTop: 12 }}>
                   {/* <h3 style={{ margin: 0, color: "#2196f3" }}>Info Bank:</h3> */}
                   <FormControl style={{ width: "100%" }}>
                     <InputLabel htmlFor="age-native-simple">
@@ -511,30 +621,53 @@ class Project extends React.Component {
                   </FormControl>
                   {(infoProject.project_type === "Online" ||
                     infoProject.project_type === "Online+Offline") && (
-                    <TextField
-                      margin="dense"
-                      name="connect_method"
-                      label="Connect Method"
-                      fullWidth
-                      disabled={isInfo}
-                      value={infoProject.connect_method}
-                      onChange={this.handleChange}
-                    />
+                    <FormControl style={{ width: "100%" }}>
+                      <InputLabel htmlFor="age-native-simple">
+                        Connect Method
+                      </InputLabel>
+                      <NativeSelect
+                        onChange={this.handleChange}
+                        name="connect_method"
+                        defaultValue={infoProject.connect_method}
+                        input={
+                          <Input
+                            name="connect_method"
+                            id="uncontrolled-native"
+                          />
+                        }
+                      >
+                        <option value="" />
+                        {this.offProjectApp.map(item => (
+                          <option>{item}</option>
+                        ))}
+                      </NativeSelect>
+                    </FormControl>
+                  )}
+                  {(infoProject.project_type === "Offline" ||
+                    infoProject.project_type === "Online+Offline") && (
+                    <FormControl style={{ width: "100%" }}>
+                      <InputLabel htmlFor="age-native-simple">
+                        Off Project App
+                      </InputLabel>
+                      <NativeSelect
+                        onChange={this.handleChange}
+                        name="off_project_app"
+                        defaultValue={infoProject.off_project_app}
+                        input={
+                          <Input
+                            name="off_project_app"
+                            id="uncontrolled-native"
+                          />
+                        }
+                      >
+                        <option value="" />
+                        {this.connectionMethod.map(item => (
+                          <option>{item}</option>
+                        ))}
+                      </NativeSelect>
+                    </FormControl>
                   )}
                   <TextField
-                    margin="dense"
-                    name="off_project_app"
-                    label="Off Project App"
-                    fullWidth
-                    disabled={isInfo}
-                    value={infoProject.off_project_app}
-                    onChange={this.handleChange}
-                  />
-                  {/* <h3 style={{ margin: 0, color: "#2196f3", paddingTop: 35 }}>
-                    Info Other:
-                  </h3> */}
-                  <TextField
-                    margin="dense"
                     name="volume"
                     label="Volume"
                     fullWidth
@@ -542,44 +675,176 @@ class Project extends React.Component {
                     value={infoProject.volume}
                     onChange={this.handleChange}
                   />
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="age-native-simple">
+                      Billing Unit
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="billing_unit"
+                      defaultValue={infoProject.billing_unit}
+                      input={
+                        <Input name="billing_unit" id="uncontrolled-native" />
+                      }
+                    >
+                      <option value="" />
+                      {this.billingUnit.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
                   <TextField
-                    margin="dense"
-                    name="currency"
-                    label="Currency"
+                    name="type_of_form_numb"
+                    label="Types Number"
                     fullWidth
+                    type="number"
+                    minMax={0}
                     disabled={isInfo}
-                    value={infoProject.currency}
+                    value={infoProject.type_of_form_numb}
                     onChange={this.handleChange}
                   />
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="age-native-simple">
+                      Currency
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="currency"
+                      defaultValue={infoProject.currency}
+                      input={<Input name="currency" id="uncontrolled-native" />}
+                    >
+                      <option value="" />
+                      {this.currency.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="age-native-simple">
+                      Credit Term
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="credit_term"
+                      defaultValue={infoProject.credit_term}
+                      input={
+                        <Input name="credit_term" id="uncontrolled-native" />
+                      }
+                    >
+                      <option value="" />
+                      {this.creditTerm.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+                  <FormControl
+                    style={{
+                      width:
+                        infoProject.charging_rate_ot === "Others"
+                          ? "70%"
+                          : "100%"
+                    }}
+                  >
+                    <InputLabel htmlFor="age-native-simple">
+                      Charging Rate OT
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="charging_rate_ot"
+                      defaultValue={infoProject.charging_rate_ot}
+                      input={
+                        <Input
+                          name="charging_rate_ot"
+                          id="uncontrolled-native"
+                        />
+                      }
+                    >
+                      <option value="" />
+                      {this.rateOT.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+
+                  <FormControl
+                    style={{
+                      width:
+                        infoProject.charging_rate_ot === "Others" ? "30%" : "0",
+                      display:
+                        infoProject.charging_rate_ot === "Others"
+                          ? " "
+                          : "none",
+                      marginTop: 16,
+                      paddingLeft: 16
+                    }}
+                  >
+                    <Input
+                      id="adornment-weight"
+                      // value={infoProject.charging_rate_ot}
+                      onChange={this.handleChange}
+                      type="number"
+                      aria-describedby="weight-helper-text"
+                      endAdornment={
+                        <InputAdornment position="end">%</InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                  <FormControl
+                    style={{
+                      width:
+                        infoProject.charging_rate_holidays === "Others"
+                          ? "70%"
+                          : "100%"
+                    }}
+                  >
+                    <InputLabel htmlFor="age-native-simple">
+                      Charging Rate Holidays
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="charging_rate_holidays"
+                      defaultValue={infoProject.charging_rate_holidays}
+                      input={
+                        <Input
+                          name="charging_rate_holidays"
+                          id="uncontrolled-native"
+                        />
+                      }
+                    >
+                      <option value="" />
+                      {this.rateHoliday.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+
+                  <FormControl
+                    style={{
+                      width:
+                        infoProject.charging_rate_holidays === "Others"
+                          ? "30%"
+                          : "0",
+                      display:
+                        infoProject.charging_rate_holidays === "Others"
+                          ? " "
+                          : "none",
+                      marginTop: 16,
+                      paddingLeft: 16
+                    }}
+                  >
+                    <Input
+                      id="adornment-weight"
+                      // value={infoProject.charging_rate_ot}
+                      onChange={this.handleChange}
+                      type="number"
+                      aria-describedby="weight-helper-text"
+                      endAdornment={
+                        <InputAdornment position="end">%</InputAdornment>
+                      }
+                    />
+                  </FormControl>
                   <TextField
-                    margin="dense"
-                    name="credit_term"
-                    label="Credit Term"
-                    fullWidth
-                    disabled={isInfo}
-                    value={infoProject.credit_term}
-                    onChange={this.handleChange}
-                  />
-                  <TextField
-                    margin="dense"
-                    name="charging_rate_ot"
-                    label="Charging Rate OT"
-                    fullWidth
-                    disabled={isInfo}
-                    value={infoProject.charging_rate_ot}
-                    onChange={this.handleChange}
-                  />
-                  <TextField
-                    margin="dense"
-                    name="charging_rate_holidays"
-                    label="Charging Rate Holidays"
-                    fullWidth
-                    disabled={isInfo}
-                    value={infoProject.charging_rate_holidays}
-                    onChange={this.handleChange}
-                  />
-                  <TextField
-                    margin="dense"
                     name="other_services"
                     label="Other Services"
                     fullWidth
@@ -588,18 +853,39 @@ class Project extends React.Component {
                     onChange={this.handleChange}
                   />
                   <TextField
-                    margin="dense"
-                    name="project_complex"
-                    label="Project Complex"
+                    name="target_speed"
+                    label="Target Speed"
                     fullWidth
+                    type="number"
                     disabled={isInfo}
-                    value={infoProject.project_complex}
+                    value={infoProject.target_speed}
                     onChange={this.handleChange}
                   />
+
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="age-native-simple">
+                      Project Complex
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="project_complex"
+                      defaultValue={infoProject.project_complex}
+                      input={
+                        <Input
+                          name="project_complex"
+                          id="uncontrolled-native"
+                        />
+                      }
+                    >
+                      <option value="" />
+                      {this.projectComplex.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
                 </Grid>
-                <Grid item xs={4} style={{ paddingTop: 33 }}>
+                <Grid item xs={12} md={4} style={{ paddingTop: 12 }}>
                   <TextField
-                    margin="dense"
                     name="total_bacth"
                     label="Total Bacth"
                     fullWidth
@@ -607,16 +893,9 @@ class Project extends React.Component {
                     value={infoProject.total_bacth}
                     onChange={this.handleChange}
                   />
-                  <TextField
-                    margin="dense"
-                    name="total_bacth"
-                    label="Total Bacth"
-                    fullWidth
-                    disabled={isInfo}
-                    value={infoProject.total_bacth}
-                    onChange={this.handleChange}
-                  />
-                  Time Setup
+                  <p style={{ marginBottom: 0, color: "#2196f3" }}>
+                    Time Setup
+                  </p>
                   <div style={{ width: "100%" }}>
                     <TextField
                       style={{ width: "50%", paddingRight: 16 }}
@@ -624,23 +903,30 @@ class Project extends React.Component {
                       label="From Date"
                       type="date"
                       fullWidth
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                       disabled={isInfo}
                       defaultValue={infoProject.from_date_setup}
                       onChange={this.handleChange}
                     />
                     <TextField
-                      margin="dense"
                       style={{ width: "50%" }}
                       name="to_date_setup"
                       label="To Date"
                       fullWidth
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                       type="date"
                       disabled={isInfo}
                       defaultValue={infoProject.to_date_setup}
                       onChange={this.handleChange}
                     />
                   </div>
-                  Time Testing
+                  <p style={{ marginBottom: 0, color: "#2196f3" }}>
+                    Time Testing
+                  </p>
                   <div style={{ width: "100%" }}>
                     <TextField
                       style={{ width: "50%", paddingRight: 16 }}
@@ -648,24 +934,28 @@ class Project extends React.Component {
                       label="From Date"
                       type="date"
                       fullWidth
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                       disabled={isInfo}
                       defaultValue={infoProject.from_date_test}
                       onChange={this.handleChange}
                     />
                     <TextField
-                      margin="dense"
                       style={{ width: "50%" }}
                       name="to_date_test"
                       label="To Date"
                       fullWidth
                       type="date"
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                       disabled={isInfo}
                       defaultValue={infoProject.to_date_test}
                       onChange={this.handleChange}
                     />
                   </div>
                   <TextField
-                    margin="dense"
                     name="planned_fte"
                     label="Planned FTE"
                     fullWidth
@@ -673,6 +963,111 @@ class Project extends React.Component {
                     defaultValue={infoProject.planned_fte}
                     onChange={this.handleChange}
                   />
+
+                  <FormControl
+                    style={{
+                      width: "100%"
+                      // width:
+                      //   infoProject.security_require_operation === "Others"
+                      //     ? "10%"
+                      //     : "100%"
+                    }}
+                  >
+                    <InputLabel htmlFor="age-native-simple">
+                      Security Requirement Operation
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="security_require_operation"
+                      defaultValue={infoProject.security_require_operation}
+                      input={
+                        <Input
+                          name="security_require_operation"
+                          id="uncontrolled-native"
+                        />
+                      }
+                    >
+                      <option value="" />
+                      {this.requireOperation.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+
+                  <FormControl
+                    style={{
+                      width:
+                        infoProject.security_require_operation === "Others"
+                          ? "100%"
+                          : "0",
+                      display:
+                        infoProject.security_require_operation === "Others"
+                          ? " "
+                          : "none",
+                      marginTop: 16
+                    }}
+                  >
+                    <Input
+                      id="adornment-weight"
+                      // value={infoProject.charging_rate_ot}
+                      onChange={this.handleChange}
+                      aria-describedby="weight-helper-text"
+                      // endAdornment={
+                      //   <InputAdornment position="end"></InputAdornment>
+                      // }
+                    />
+                  </FormControl>
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="age-native-simple">
+                      Security requirement_Delivery
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="security_require_delivery"
+                      defaultValue={infoProject.security_require_delivery}
+                      input={
+                        <Input
+                          name="security_require_delivery"
+                          id="uncontrolled-native"
+                        />
+                      }
+                    >
+                      <option value="" />
+                      {this.requireDeliver.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+                  <TextField
+                    name="security_require_communication"
+                    label="Security Requirement Communication"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.security_require_communication}
+                    onChange={this.handleChange}
+                  />
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="select-multiple-checkbox">
+                      Contract Type
+                    </InputLabel>
+                    <Select
+                      multiple
+                      value={this.state.nametest}
+                      onChange={this.handleChange}
+                      input={<Input id="select-multiple-checkbox" />}
+                      renderValue={selected => selected.join(", ")}
+                      // MenuProps={MenuProps}
+                    >
+                      {this.contractType.map(name => (
+                        <MenuItem key={name} value={name}>
+                          <Checkbox
+                            checked={this.state.nametest.indexOf(name) > -1}
+                          />
+                          <ListItemText>{name}</ListItemText>
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
               </Grid>
             </DialogContent>

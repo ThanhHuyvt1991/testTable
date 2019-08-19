@@ -239,7 +239,14 @@ class Customer extends React.Component {
           <div
             style={{ width: "100%", display: "inline-block", paddingTop: 12 }}
           >
-            <h2 style={{ margin: 0, padding: 12, float: "left" }}>
+            <h2
+              style={{
+                margin: 0,
+                padding: 12,
+                paddingBottom: 0,
+                float: "left"
+              }}
+            >
               Customer Manager
             </h2>
             <Fab
@@ -273,7 +280,7 @@ class Customer extends React.Component {
             style={{ borderBottom: "1px solid #e0e0e0" }}
           >
             <Grid container spacing={24}>
-              <Grid item xs={6} style={{ position: "relative" }}>
+              <Grid item xs={12} md={6} style={{ position: "relative" }}>
                 {this.state.titleName}
                 <FormControlLabel
                   style={{ position: "absolute", top: 30, left: 12 }}
@@ -281,7 +288,7 @@ class Customer extends React.Component {
                   label="Active"
                 />
               </Grid>
-              <Grid item xs={6} style={{ textAlign: "right" }}>
+              <Grid item xs={12} md={6} style={{ textAlign: "right" }}>
                 <Button
                   onClick={this.handleClose}
                   variant="contained"
@@ -302,13 +309,12 @@ class Customer extends React.Component {
           </DialogTitle>
           <DialogContent>
             <Grid container spacing={24} style={{ paddingTop: 12 }}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <h3 style={{ margin: 0, color: "#2196f3" }}>Info Customer:</h3>
                 <div style={{ width: "100%" }}>
                   <TextField
                     style={{ width: "30%", paddingRight: 16 }}
                     autoFocus
-                    margin="dense"
                     name="customer_code"
                     label="Customer Code"
                     type="number"
@@ -318,7 +324,6 @@ class Customer extends React.Component {
                   />
                   <TextField
                     style={{ width: "70%" }}
-                    margin="dense"
                     name="customer_name"
                     label="Customer Name"
                     maxLength="3"
@@ -328,7 +333,6 @@ class Customer extends React.Component {
                   />
                 </div>
                 <TextField
-                  margin="dense"
                   name="description"
                   label="Descreption"
                   fullWidth
@@ -337,7 +341,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="customer_address"
                   label="Customer Address"
                   fullWidth
@@ -346,7 +349,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="customer_email"
                   label="Representative's Email"
                   fullWidth
@@ -359,7 +361,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="tax_code"
                   label="Tax Code"
                   type="number"
@@ -369,7 +370,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="legal_pepresentative"
                   label="Legal Representative Name"
                   fullWidth
@@ -378,7 +378,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="position_per_sign"
                   label="Position"
                   placeholder="The position of the person signing the contract"
@@ -388,7 +387,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="phone_per_sign"
                   label="Telephone"
                   type="number"
@@ -400,7 +398,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="email_per_sign"
                   label="Email"
                   fullWidth
@@ -410,11 +407,10 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <h3 style={{ margin: 0, color: "#2196f3" }}>Info Bank:</h3>
 
                 <TextField
-                  margin="dense"
                   name="bank_account"
                   label="Bank Account"
                   fullWidth
@@ -423,7 +419,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="bank_name"
                   label="Bank Name"
                   fullWidth
@@ -432,7 +427,6 @@ class Customer extends React.Component {
                   onChange={this.handleChange}
                 />
                 <TextField
-                  margin="dense"
                   name="bank_address"
                   label="Bank Address"
                   fullWidth
@@ -444,7 +438,6 @@ class Customer extends React.Component {
                   Info Other:
                 </h3>
                 <TextField
-                  margin="dense"
                   name="country"
                   label="Country"
                   fullWidth
