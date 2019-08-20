@@ -15,11 +15,22 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Grid from "@material-ui/core/Grid";
-import { Switch, FormControlLabel } from "@material-ui/core";
+import {
+  Switch,
+  FormControlLabel,
+  InputLabel,
+  Input,
+  NativeSelect
+} from "@material-ui/core";
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import * as style from "./styles.css";
 import "react-table-hoc-fixed-columns/lib/styles.css";
 import clone from "clone";
+import FormControl from "@material-ui/core/FormControl";
+import ListItemText from "@material-ui/core/ListItemText";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const styles = theme => ({
@@ -41,8 +52,9 @@ class Customer extends React.Component {
       infoCustomer: {},
       selected: null,
       titleName: "",
-      name: "",
-      datas: []
+      datas: [],
+      legalSelect: [],
+      name: ""
     };
   }
   columns = [
@@ -98,14 +110,15 @@ class Customer extends React.Component {
       Header: "Bank Address",
       accessor: "bank_address" // String-based value accessors!
     },
-    // {
-    //   Header: "Legal binding document",
-    //   accessor: "name" // String-based value accessors!
-    // },
-    // {
-    //   Header: "Attachment",
-    //   accessor: "name" // String-based value accessors!
-    // },
+    {
+      Header: "Legal Document",
+      accessor: "legal_document" // String-based value accessors!
+    },
+    {
+      Header: "Attachment",
+      accessor: "attachment", // String-based value accessors!
+      Cell: props => <span className="number">{props.value}</span>
+    },
     {
       Header: "Country",
       accessor: "country" // String-based value accessors!
@@ -136,6 +149,15 @@ class Customer extends React.Component {
       fixed: "right"
     }
   ];
+  countryList = ["My", "Anh", "Phap", "Viet Nam", "Lao", "Campuchia"];
+  legalDocumentList = [
+    "NDA",
+    "GSA",
+    "ISA",
+    "SOW",
+    "Quotation",
+    "Email Confirmation"
+  ];
 
   addNewCustomer = () => {
     this.setState({
@@ -144,7 +166,8 @@ class Customer extends React.Component {
       isInfo: false,
       isEdit: false,
       infoCustomer: {},
-      titleName: "Create New Customer"
+      titleName: "Create New Customer",
+      legalSelect: []
     });
   };
   editCustomer = row => {
@@ -184,6 +207,7 @@ class Customer extends React.Component {
     console.log("d", this.state.datas);
 
     console.log("this.data", this.data);
+    this.state.infoCustomer.legal_document = this.state.legalSelect;
 
     if (this.state.isCreate) {
       console.log("tao moi", this.state.infoCustomer);
@@ -207,10 +231,11 @@ class Customer extends React.Component {
           this.state.infoCustomer.id,
         {
           method: "PUT",
+
+          body: JSON.stringify(this.state.infoCustomer),
           headers: {
             "Content-Type": "application/json"
-          },
-          body: JSON.stringify(this.state.infoCustomer)
+          }
         }
       )
         .then(response => response.json())
@@ -229,9 +254,15 @@ class Customer extends React.Component {
   componentDidMount() {
     this.getCustomers();
   }
+  handleSelectLegal = event => {
+    this.setState({
+      legalSelect: event.target.value
+    });
+  };
   render() {
     const { classes } = this.props;
-    const { isEdit, infoCustomer, isInfo } = this.state;
+    const { isEdit, infoCustomer, isInfo, legalSelect } = this.state;
+    console.log("legalSelect", legalSelect);
 
     return (
       <React.Fragment>
@@ -283,13 +314,13 @@ class Customer extends React.Component {
               <Grid item xs={12} md={6} style={{ position: "relative" }}>
                 {this.state.titleName}
                 <FormControlLabel
-                  style={{ position: "absolute", top: 30, left: 12 }}
+                  style={{ position: "absolute", top: 21, left: 12 }}
                   control={<Switch color="primary" />}
                   label="Active"
                 />
               </Grid>
               <Grid item xs={12} md={6} style={{ textAlign: "right" }}>
-                <Button
+                {/* <Button
                   onClick={this.handleClose}
                   variant="contained"
                   color="primary"
@@ -303,7 +334,7 @@ class Customer extends React.Component {
                   style={{ background: "red", color: "white" }}
                 >
                   Reject
-                </Button>
+                </Button> */}
               </Grid>
             </Grid>
           </DialogTitle>
@@ -437,14 +468,45 @@ class Customer extends React.Component {
                 <h3 style={{ margin: 0, color: "#2196f3", paddingTop: 35 }}>
                   Info Other:
                 </h3>
-                <TextField
-                  name="country"
-                  label="Country"
-                  fullWidth
-                  disabled={isInfo}
-                  value={infoCustomer.country}
-                  onChange={this.handleChange}
-                />
+                <FormControl style={{ width: "100%" }}>
+                  <InputLabel htmlFor="select-multiple-checkbox">
+                    Contract Type
+                  </InputLabel>
+                  <Select
+                    disabled={isInfo}
+                    multiple
+                    value={this.state.legalSelect ? this.state.legalSelect : []}
+                    // defaultValue={infoCustomer.attachment}
+                    onChange={this.handleSelectLegal}
+                    input={<Input id="select-multiple-checkbox" />}
+                    renderValue={selected => selected.join(", ")}
+                  >
+                    {this.legalDocumentList.map(name => (
+                      <MenuItem key={name} value={name}>
+                        <Checkbox
+                          checked={this.state.legalSelect.indexOf(name) > -1}
+                        />
+                        <ListItemText>{name}</ListItemText>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl style={{ width: "100%" }}>
+                  <InputLabel htmlFor="age-native-simple">Country</InputLabel>
+                  <NativeSelect
+                    disabled={isInfo}
+                    onChange={this.handleChange}
+                    name="country"
+                    defaultValue={infoCustomer.country}
+                    input={<Input name="country" id="uncontrolled-native" />}
+                  >
+                    <option value="" />
+                    {this.countryList.map(item => (
+                      <option>{item}</option>
+                    ))}
+                  </NativeSelect>
+                </FormControl>
               </Grid>
             </Grid>
           </DialogContent>

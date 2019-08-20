@@ -93,6 +93,7 @@ class Project extends React.Component {
     "Quotation",
     "Email Confirmation"
   ];
+  // qcUnit=[Record, field, document, per 1,000 characters, image, line item]
   data = [
     {
       project_code: 45,
@@ -160,6 +161,10 @@ class Project extends React.Component {
       accessor: "frequency"
     },
     {
+      Header: "DIGI's Team",
+      accessor: "digi_team"
+    },
+    {
       Header: "Start Date",
       accessor: "start_date" // String-based value accessors!
     },
@@ -180,8 +185,20 @@ class Project extends React.Component {
       accessor: "off_project_app" // String-based value accessors!
     },
     {
+      Header: "Input Format",
+      accessor: "input_format" // String-based value accessors!
+    },
+    {
+      Header: "Output Format",
+      accessor: "output_format" // String-based value accessors!
+    },
+    {
       Header: "Volume",
       accessor: "volume" // String-based value accessors!
+    },
+    {
+      Header: "Forecast",
+      accessor: "forecast" // String-based value accessors!
     },
     {
       Header: "Billing Unit",
@@ -190,6 +207,14 @@ class Project extends React.Component {
     {
       Header: "Types Number",
       accessor: "type_of_form_numb"
+    },
+    {
+      Header: "Unit Price",
+      accessor: "unit_price"
+    },
+    {
+      Header: "Package Price",
+      accessor: "package_price"
     },
     {
       Header: "Currency",
@@ -212,12 +237,20 @@ class Project extends React.Component {
       accessor: "other_services" // String-based value accessors!
     },
     {
+      Header: "Steps Of Process",
+      accessor: "steps_of_process" // String-based value accessors!
+    },
+    {
       Header: "Target Speed",
       accessor: "target_speed"
     },
     {
       Header: "Project Complex",
       accessor: "project_complex" // String-based value accessors!
+    },
+    {
+      Header: "Digi-pay Unit Wage",
+      accessor: "digipay_unit_wage" // String-based value accessors!
     },
     {
       Header: "Total Bacth",
@@ -244,6 +277,10 @@ class Project extends React.Component {
       accessor: "planned_fte" // String-based value accessors!
     },
     {
+      Header: "Shift(s)",
+      accessor: "shift" // String-based value accessors!
+    },
+    {
       Header: "Security Requirement Delivery",
       accessor: "security_require_delivery"
     },
@@ -256,10 +293,34 @@ class Project extends React.Component {
       accessor: "security_require_communication"
     },
     {
-      Header: "contract Type",
-      accessor: "contract_type"
+      Header: "Security Requirement Delete",
+      accessor: "security_require_delete"
     },
-
+    {
+      Header: "Contract Type",
+      accessor: "contract_type",
+      Cell: props => <span className="number">{props.value}</span>
+    },
+    {
+      Header: "Contract Expiration Date",
+      accessor: "contract_expiration_date"
+    },
+    {
+      Header: "Quality Level",
+      accessor: "quality_level"
+    },
+    {
+      Header: "QC Unit",
+      accessor: "qc_unit"
+    },
+    {
+      Header: "QC Schedule",
+      accessor: "qc_schedule"
+    },
+    {
+      Header: "QAE",
+      accessor: "qae"
+    },
     {
       Header: "Action",
       accessor: "table_id",
@@ -293,9 +354,10 @@ class Project extends React.Component {
       isInfo: false,
       isEdit: false,
       infoProject: {},
+      nametest: [],
       titleName: "Create New Project"
     });
-    console.log(this.state.infoProject.start_date);
+    console.log("type", this.state.infoProject.con);
   };
   editProject = row => {
     this.setState({
@@ -334,6 +396,8 @@ class Project extends React.Component {
     this.setState({ infoProject: infoProject });
   };
   addUpdateProject = () => {
+    this.state.infoProject.contract_type = this.state.nametest;
+    // this.state.infoCustomer.attachment = this.state.attacmentSelect;
     console.log("d", this.state.datas);
 
     console.log("this.data", this.data);
@@ -354,12 +418,12 @@ class Project extends React.Component {
           this.setState({ open: false });
         });
     } else {
-      console.log("edit", this.state.infoProject);
+      console.log("edit", this.state.infoProject.contract_type);
       fetch(
         "http://5d3fbc05c516a90014e8908e.mockapi.io/projects/" +
           this.state.infoProject.id,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json"
           },
@@ -385,9 +449,13 @@ class Project extends React.Component {
   handleChosseProjectType = event => {
     console.log(event.target.value);
   };
+  selectContractType = event => {
+    this.setState({ nametest: event.target.value });
+  };
   render() {
     const { classes } = this.props;
     const { isEdit, infoProject, isInfo } = this.state;
+    console.log(this.state.nametest);
     return (
       <React.Fragment>
         <div>
@@ -417,6 +485,7 @@ class Project extends React.Component {
           {/* diglog */}
           <Dialog
             fullWidth={true}
+            // fullScreen
             maxWidth={"lg"}
             open={this.state.open}
             onClose={this.handleClose}
@@ -430,13 +499,13 @@ class Project extends React.Component {
                 <Grid item xs={12} md={6} style={{ position: "relative" }}>
                   {this.state.titleName}
                   <FormControlLabel
-                    style={{ position: "absolute", top: 30, left: 12 }}
+                    style={{ position: "absolute", top: 21, left: 12 }}
                     control={<Switch color="primary" />}
                     label="Active"
                   />
                 </Grid>
                 <Grid item xs={12} md={6} style={{ textAlign: "right" }}>
-                  <Button
+                  {/* <Button
                     onClick={this.handleClose}
                     variant="contained"
                     color="primary"
@@ -450,7 +519,7 @@ class Project extends React.Component {
                     style={{ background: "red", color: "white" }}
                   >
                     Reject
-                  </Button>
+                  </Button> */}
                 </Grid>
               </Grid>
             </DialogTitle>
@@ -569,6 +638,14 @@ class Project extends React.Component {
                       </NativeSelect>
                     </FormControl>
                   )}
+                  <TextField
+                    name="digi_team"
+                    label="DIGI's Team"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.digi_team}
+                    onChange={this.handleChange}
+                  />
 
                   <div style={{ width: "100%" }}>
                     <TextField
@@ -668,11 +745,35 @@ class Project extends React.Component {
                     </FormControl>
                   )}
                   <TextField
+                    name="input_format"
+                    label="Input Format"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.input_format}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
+                    name="output_format"
+                    label="Output Format"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.output_format}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
                     name="volume"
                     label="Volume"
                     fullWidth
                     disabled={isInfo}
                     value={infoProject.volume}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
+                    name="Forecast"
+                    label="forecast"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.Forecast}
                     onChange={this.handleChange}
                   />
                   <FormControl style={{ width: "100%" }}>
@@ -701,6 +802,22 @@ class Project extends React.Component {
                     minMax={0}
                     disabled={isInfo}
                     value={infoProject.type_of_form_numb}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
+                    name="unit_price"
+                    label="Unit Price"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.unit_price}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
+                    name="package_price"
+                    label="Package Price"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.package_price}
                     onChange={this.handleChange}
                   />
                   <FormControl style={{ width: "100%" }}>
@@ -845,6 +962,14 @@ class Project extends React.Component {
                     />
                   </FormControl>
                   <TextField
+                    name="steps_of_process"
+                    label="Steps Of Process"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.steps_of_process}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
                     name="other_services"
                     label="Other Services"
                     fullWidth
@@ -883,6 +1008,21 @@ class Project extends React.Component {
                       ))}
                     </NativeSelect>
                   </FormControl>
+                  <TextField
+                    style={{ width: "100%" }}
+                    name="digipay_unit_wage"
+                    label="Digi_pay Unit Wage"
+                    type="number"
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">VND/unit</InputAdornment>
+                      )
+                    }}
+                    disabled={isInfo}
+                    defaultValue={infoProject.digipay_unit_wage}
+                    onChange={this.handleChange}
+                  />
                 </Grid>
                 <Grid item xs={12} md={4} style={{ paddingTop: 12 }}>
                   <TextField
@@ -961,6 +1101,14 @@ class Project extends React.Component {
                     fullWidth
                     disabled={isInfo}
                     defaultValue={infoProject.planned_fte}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
+                    name="shift"
+                    label="Shift"
+                    fullWidth
+                    disabled={isInfo}
+                    defaultValue={infoProject.shift}
                     onChange={this.handleChange}
                   />
 
@@ -1046,17 +1194,29 @@ class Project extends React.Component {
                     value={infoProject.security_require_communication}
                     onChange={this.handleChange}
                   />
+                  <TextField
+                    name="security_require_delete"
+                    label="Security Requirement Delete"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.security_require_delete}
+                    onChange={this.handleChange}
+                  />
                   <FormControl style={{ width: "100%" }}>
                     <InputLabel htmlFor="select-multiple-checkbox">
                       Contract Type
                     </InputLabel>
                     <Select
                       multiple
-                      value={this.state.nametest}
-                      onChange={this.handleChange}
+                      value={
+                        this.state.infoProject.contractType
+                          ? this.state.infoProject.contractType
+                          : []
+                      }
+                      onChange={this.selectContractType}
                       input={<Input id="select-multiple-checkbox" />}
                       renderValue={selected => selected.join(", ")}
-                      // MenuProps={MenuProps}
+                      MenuProps={MenuProps}
                     >
                       {this.contractType.map(name => (
                         <MenuItem key={name} value={name}>
@@ -1068,6 +1228,67 @@ class Project extends React.Component {
                       ))}
                     </Select>
                   </FormControl>
+                  <TextField
+                    style={{ width: "100%" }}
+                    name="contract_expiration_date"
+                    label="Contract Expiration Date"
+                    type="date"
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    disabled={isInfo}
+                    defaultValue={infoProject.contract_expiration_date}
+                    onChange={this.handleChange}
+                  />
+
+                  <TextField
+                    style={{ width: "100%" }}
+                    name="quality_level"
+                    label="Quality level"
+                    type="number"
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      )
+                    }}
+                    disabled={isInfo}
+                    defaultValue={infoProject.quality_level}
+                    onChange={this.handleChange}
+                  />
+                  <FormControl style={{ width: "100%" }}>
+                    <InputLabel htmlFor="age-native-simple">
+                      Billing Unit
+                    </InputLabel>
+                    <NativeSelect
+                      onChange={this.handleChange}
+                      name="qc_unit"
+                      defaultValue={infoProject.qc_unit}
+                      input={<Input name="qc_unit" id="uncontrolled-native" />}
+                    >
+                      <option value="" />
+                      {this.billingUnit.map(item => (
+                        <option>{item}</option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
+                  <TextField
+                    name="qc_schedule"
+                    label="QC Schedule"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.qc_schedule}
+                    onChange={this.handleChange}
+                  />
+                  <TextField
+                    label="QAE"
+                    name="qae"
+                    fullWidth
+                    disabled={isInfo}
+                    value={infoProject.QAE}
+                    onChange={this.handleChange}
+                  />
                 </Grid>
               </Grid>
             </DialogContent>

@@ -8,6 +8,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Customer from "./customer/customerList";
 import Project from "./project/projectList";
+import PhoneIcon from "@material-ui/icons/Phone";
 
 function TabContainer({ children, dir }) {
   return (
@@ -51,12 +52,13 @@ class DashBoards extends React.Component {
           <Tabs
             value={this.state.value}
             onChange={this.handleChange}
+            variant="scrollable"
+            scrollButtons="on"
             indicatorColor="primary"
             textColor="primary"
-            variant="fullWidth"
           >
-            <Tab label="CUSTOMER" />
-            <Tab label="PROJECT" />
+            <Tab label="CUSTOMER" icon={<PhoneIcon />} />
+            <Tab label="PROJECT" icon={<PhoneIcon />} />
           </Tabs>
         </AppBar>
         <SwipeableViews
