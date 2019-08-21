@@ -57,8 +57,8 @@ class DashBoards extends React.Component {
             indicatorColor="primary"
             textColor="primary"
           >
-            <Tab label="CUSTOMER" icon={<PhoneIcon />} />
-            <Tab label="PROJECT" icon={<PhoneIcon />} />
+            <Tab label="CUSTOMER" />
+            <Tab label="PROJECT" />
           </Tabs>
         </AppBar>
         <SwipeableViews
