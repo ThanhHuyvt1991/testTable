@@ -57,8 +57,8 @@ class DashBoards extends React.Component {
             indicatorColor="primary"
             textColor="primary"
           >
-            <Tab label="CUSTOMER" />
-            <Tab label="PROJECT" />
+            <Tab label="CUSTOMER" style={{ fontWeight: "bolder" }} />
+            <Tab label="PROJECT" style={{ fontWeight: "bolder" }} />
           </Tabs>
         </AppBar>
         <SwipeableViews
